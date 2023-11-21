@@ -48,12 +48,16 @@ jobs:
     needs:
       - init
     if: needs.init.outputs.is_run == "true"
+    steps:
+      - run: echo "Run!"
   on_norun:
     name: "Run on Not-Run"
     runs-on: ubuntu-latest
     needs:
       - init
     if: needs.init.outputs.is_run == "false"
+    steps:
+      - run: echo "Don't Run!"
   report_outputs:
     name: "Report Outputs"
     runs-on: ubuntu-latest
