@@ -42,6 +42,18 @@ jobs:
           # - or automatically triggered and neither on main nor triggered for draft pull request.
           [[ ${{ steps.is_manual.outputs.result }} == "true" || (${{ steps.is_main.outputs.result }} == "false" && ${{ steps.is_draft.outputs.result }} == "false") ]] && result="true" || result="false"
           echo "result=${result}" >> $GITHUB_OUTPUT
+  on_run:
+    name: "Run on Run"
+    runs-on: ubuntu-latest
+    needs:
+      - init
+    if: steps.is_run.outputs.result == "true"
+  on_norun:
+    name: "Run on Not-Run"
+    runs-on: ubuntu-latest
+    needs:
+      - init
+    if: steps.is_run.outputs.result == "false"
   report_outputs:
     name: "Report Outputs"
     runs-on: ubuntu-latest
