@@ -1,0 +1,48 @@
+# This is an example for handing over outputs between jobs
+# https://docs.github.com/en/github-ae@latest/actions/using-workflows/workflow-syntax-for-github-actions#jobsjob_idoutputs
+
+name: outputs
+
+# Controls when the workflow will run
+on:
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+jobs:
+  init:
+    name: "Initialize Environment"
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    outputs:
+      is_manual: ${{ steps.is_manual.outputs.result }}
+      is_draft: ${{ steps.is_draft.outputs.result }}
+      is_main: ${{ steps.is_main.outputs.result }}
+    steps:
+      - id: is_manual
+        name: "Action: Manually Triggered?"
+        run: |
+          echo "result=$( ${{ github.event_name }} == "workflow_dispatch" )" >> $GITHUB_OUTPUT
+      - id: is_draft
+        name: "Pull Request: Draft?"
+        run: |
+          echo "result=${{ github.event.pull_request.draft }}" >> $GITHUB_OUTPUT
+      - id: is_main
+        name: "Main?"
+        run: |
+          echo "result=$( ${{ github.ref }} == "refs/heads/main" )" >> $GITHUB_OUTPUT
+  report_outputs:
+    name: "Report Outputs"
+    runs-on: ubuntu-latest
+    needs:
+      - init
+    env:
+      IS_MANUAL: ${{ needs.init.outputs.is_manual }}
+      IS_DRAFT: ${{ needs.init.outputs.is_draft }}
+      IS_MAIN: ${{ needs.init.outputs.is_main }}
+    steps:
+      - id: report
+        name: "Report"
+        run: |
+          echo "IS_MANUAL: ${IS_MANUAL}"
+          echo "IS_DRAFT: ${IS_DRAFT}"
+          echo "IS_MAIN: ${IS_MAIN}"
