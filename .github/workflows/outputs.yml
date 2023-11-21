@@ -21,15 +21,18 @@ jobs:
       - id: is_manual
         name: "Action: Manually Triggered?"
         run: |
-          echo "result=$( ${{ github.event_name }} == "workflow_dispatch" )" >> $GITHUB_OUTPUT
+          [ ${{ github.event_name }} == "workflow_dispatch" ] && result="true" || result="false"
+          echo "result=${result}" >> $GITHUB_OUTPUT
       - id: is_draft
         name: "Pull Request: Draft?"
         run: |
-          echo "result=${{ github.event.pull_request.draft }}" >> $GITHUB_OUTPUT
+          [ ${{ github.event.pull_request.draft }} ] && result="true" || result="false"
+          echo "result=${result}" >> $GITHUB_OUTPUT
       - id: is_main
         name: "Main?"
         run: |
-          echo "result=$( ${{ github.ref }} == "refs/heads/main" )" >> $GITHUB_OUTPUT
+          [ ${{ github.ref }} == "refs/heads/main" ] && result="true" || result="false"
+          echo "result=${result}" >> $GITHUB_OUTPUT
   report_outputs:
     name: "Report Outputs"
     runs-on: ubuntu-latest
