@@ -64,14 +64,18 @@ jobs:
     needs:
       - on_run
     steps:
-      - run: echo "Done: Run!"
+      - name: main
+        run: |
+          echo "Done: Run!"
   on_norun_after:
     name: "Run on Not-Run (After)"
     runs-on: ubuntu-latest
     needs:
       - on_norun
     steps:
-      - run: echo "Done: Don't Run!"
+      - name: main
+        run: |
+          echo "Done: Don't Run!"
   report_outputs:
     name: "Report Outputs"
     runs-on: ubuntu-latest
