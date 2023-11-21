@@ -47,13 +47,13 @@ jobs:
     runs-on: ubuntu-latest
     needs:
       - init
-    if: steps.is_run.outputs.result == "true"
+    if: needs.init.outputs.is_run == "true"
   on_norun:
     name: "Run on Not-Run"
     runs-on: ubuntu-latest
     needs:
       - init
-    if: steps.is_run.outputs.result == "false"
+    if: needs.init.outputs.is_run == "false"
   report_outputs:
     name: "Report Outputs"
     runs-on: ubuntu-latest
