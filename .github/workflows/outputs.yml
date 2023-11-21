@@ -17,6 +17,7 @@ jobs:
       is_manual: ${{ steps.is_manual.outputs.result }}
       is_draft: ${{ steps.is_draft.outputs.result }}
       is_main: ${{ steps.is_main.outputs.result }}
+      is_run: ${{ steps.is_run.outputs.result }}
     steps:
       - id: is_manual
         name: "Action: Manually Triggered?"
@@ -33,6 +34,14 @@ jobs:
         run: |
           [ ${{ github.ref }} == "refs/heads/main" ] && result="true" || result="false"
           echo "result=${result}" >> $GITHUB_OUTPUT
+      - id: is_run
+        name: "Run?"
+        run: |
+          # Allow to run if:
+          # - manually triggered
+          # - or automatically triggered and neither on main nor triggered for draft pull request.
+          [[ ${{ steps.is_manual.outputs.result }} == "true" || (${{ steps.is_main.outputs.result }} == "false" && ${{ steps.is_draft.outputs.result }} == "false") ]] && result="true" || result="false"
+          echo "result=${result}" >> $GITHUB_OUTPUT
   report_outputs:
     name: "Report Outputs"
     runs-on: ubuntu-latest
@@ -42,6 +51,7 @@ jobs:
       IS_MANUAL: ${{ needs.init.outputs.is_manual }}
       IS_DRAFT: ${{ needs.init.outputs.is_draft }}
       IS_MAIN: ${{ needs.init.outputs.is_main }}
+      IS_RUN: ${{ needs.init.outputs.is_run }}
     steps:
       - id: report
         name: "Report"
@@ -49,3 +59,5 @@ jobs:
           echo "IS_MANUAL: ${IS_MANUAL}"
           echo "IS_DRAFT: ${IS_DRAFT}"
           echo "IS_MAIN: ${IS_MAIN}"
+          echo "IS_RUN: ${IS_RUN}"
+
