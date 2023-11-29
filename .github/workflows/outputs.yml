@@ -9,41 +9,45 @@ on:
   workflow_dispatch:
     inputs:
       username:
-        description: 'A username passed from the caller workflow'
-        default: "${github.actor}"
+        description: |
+          Your Name
+        default: ""
         required: false
         type: string
   # Allows to invoke this workflow from another workflow.
   workflow_call:
     inputs:
       username:
-        description: 'A username passed from the caller workflow'
-        default: "${github.actor}"
+        description: |
+          Your Name
+        default: ""
         required: false
         type: string
 
 permissions: {}
 
 jobs:
-  init:
-    name: "Initialize Environment"
+  vars:
+    name: "Set Variables"
     runs-on: ubuntu-latest
     timeout-minutes: 5
-    outputs:
-      name: ${{ steps.name.outputs.result }}
     steps:
       - id: name
-        name: "Set Name"
+        name: "Use Default Name?"
         run: |
-          echo "result=${{ inputs.username }}" >> $GITHUB_OUTPUT
+          username="${{ inputs.username }}"
+          result="${username:-${{ github.actor }}}"
+          echo "result=${result}" >> $GITHUB_OUTPUT
+    outputs:
+      name: ${{ steps.name.outputs.result }}
   hello:
     name: "Say Hello"
     runs-on: ubuntu-latest
     timeout-minutes: 5
     needs:
-      - init
+      - vars
     env:
-      NAME: ${{ needs.init.outputs.name }}
+      NAME: ${{ needs.vars.outputs.name }}
     steps:
       - id: main
         name: "Main"
