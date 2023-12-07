@@ -6,8 +6,12 @@ on:
   workflow_dispatch:
   workflow_call:
     outputs:
-      nodeVersion: ${{ jobs.nodeVersion.outputs.nodeVersion }}
-      pnpmVersion: ${{ jobs.pnpmVersion.outputs.pnpmVersion }}
+      nodeVersion:
+        description: "Determined node version from package.json"
+        value: ${{ jobs.nodeVersion.outputs.nodeVersion }}
+      pnpmVersion:
+        description: "Determined pnpm version from package.json"
+        value: ${{ jobs.pnpmVersion.outputs.pnpmVersion }}
 
 permissions: { contents: write }
 
