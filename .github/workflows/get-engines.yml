@@ -6,8 +6,8 @@ on:
   workflow_dispatch:
   workflow_call:
     outputs:
-      nodeVersion: ${{ jobs.node.outputs.nodeVersion }}
-      pnpmVersion: ${{ jobs.pnpm.outputs.pnpmVersion }}
+      nodeVersion: ${{ jobs.nodeVersion.outputs.nodeVersion }}
+      pnpmVersion: ${{ jobs.pnpmVersion.outputs.pnpmVersion }}
 
 permissions: { contents: write }
 
@@ -22,7 +22,7 @@ env:
     }
 
 jobs:
-  node:
+  nodeVersion:
     name: "Get Node Version"
     runs-on: ubuntu-latest
     timeout-minutes: 5
@@ -38,7 +38,7 @@ jobs:
           echo "result=${result}" >> $GITHUB_OUTPUT
     outputs:
       nodeVersion: ${{ steps.get-node-version.outputs.result }}
-  pnpm:
+  pnpmVersion:
     name: "Get PNPM Version"
     runs-on: ubuntu-latest
     timeout-minutes: 5
