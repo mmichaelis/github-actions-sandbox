@@ -38,7 +38,7 @@ jobs:
       - id: get-node-version
         name: "Get Node.js version"
         run: |
-          result=$(package.json | jq ".engines.node")
+          result=$(cat package.json | jq ".engines.node")
           echo "result=${result}" >> $GITHUB_OUTPUT
     outputs:
       nodeVersion: ${{ steps.get-node-version.outputs.result }}
@@ -54,7 +54,7 @@ jobs:
       - id: get-pnpm-version
         name: "Get PNPM version"
         run: |
-          result=$(package.json | jq ".engines.pnpm")
+          result=$(cat package.json | jq ".engines.pnpm")
           echo "result=${result}" >> $GITHUB_OUTPUT
     outputs:
       pnpmVersion: ${{ steps.get-pnpm-version.outputs.result }}
