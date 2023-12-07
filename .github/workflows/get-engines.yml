@@ -4,7 +4,7 @@ name: get-engines
 
 on:
   workflow_dispatch:
-  workflow_run:
+  workflow_call:
 
 permissions: { contents: write }
 
