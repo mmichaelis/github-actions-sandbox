@@ -5,6 +5,9 @@ name: get-engines
 on:
   workflow_dispatch:
   workflow_call:
+    outputs:
+      nodeVersion: ${{ jobs.node.outputs.nodeVersion }}
+      pnpmVersion: ${{ jobs.pnpm.outputs.pnpmVersion }}
 
 permissions: { contents: write }
 
@@ -27,4 +30,27 @@ jobs:
       - id: setup
         name: "Create artificial package.json"
         run: |
-          echo "${{ env.packageJsonFixture }}"
+          echo "${{ env.packageJsonFixture }}" > package.json
+      - id: get-node-version
+        name: "Get Node.js version"
+        run: |
+          result=$(package.json | jq ".engines.node")
+          echo "result=${result}" >> $GITHUB_OUTPUT
+    outputs:
+      nodeVersion: ${{ steps.get-node-version.outputs.result }}
+  pnpm:
+    name: "Get PNPM Version"
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - id: setup
+        name: "Create artificial package.json"
+        run: |
+          echo "${{ env.packageJsonFixture }}" > package.json
+      - id: get-pnpm-version
+        name: "Get PNPM version"
+        run: |
+          result=$(package.json | jq ".engines.pnpm")
+          echo "result=${result}" >> $GITHUB_OUTPUT
+    outputs:
+      pnpmVersion: ${{ steps.get-pnpm-version.outputs.result }}
