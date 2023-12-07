@@ -1,0 +1,30 @@
+# Example for getting engine information from a `package.json`.
+
+name: get-engines
+
+on:
+  workflow_dispatch:
+  workflow_run:
+
+permissions: { contents: write }
+
+env:
+  # Multi-line environment variables: https://github.com/orgs/community/discussions/26464
+  packageJsonFixture: |
+    {
+      "engines": {
+        "node": "20",
+        "pnpm": "^8.6"
+      }
+    }
+
+jobs:
+  node:
+    name: "Get Node Version"
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - id: setup
+        name: "Create artificial package.json"
+        run: |
+          echo "${{ env.packageJsonFixture }}"
