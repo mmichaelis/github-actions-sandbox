@@ -75,5 +75,7 @@ jobs:
       - id: main
         name: "Main"
         run: |
+          echo "# Detected Engines" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
           echo "* Node Version: ${{ env.nodeVersion }}" >> $GITHUB_STEP_SUMMARY
           echo "* PNPM Version: ${{ env.pnpmVersion }}" >> $GITHUB_STEP_SUMMARY
