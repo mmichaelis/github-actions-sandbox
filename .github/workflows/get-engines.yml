@@ -19,9 +19,9 @@ env:
   # Multi-line environment variables: https://github.com/orgs/community/discussions/26464
   packageJsonFixture: |
     {
-      "engines": {
-        "node": "20",
-        "pnpm": "^8.6"
+      \"engines\": {
+        \"node\": \"20\",
+        \"pnpm\": \"^8.6\"
       }
     }
 
