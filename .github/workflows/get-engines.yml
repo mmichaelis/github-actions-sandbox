@@ -38,6 +38,8 @@ jobs:
       - id: get-node-version
         name: "Get Node.js version"
         run: |
+          cat package.json
+          cat package.json | jq ".engines.node"
           result=$(cat package.json | jq ".engines.node")
           echo "result=${result}" >> $GITHUB_OUTPUT
     outputs:
