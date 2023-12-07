@@ -60,3 +60,20 @@ jobs:
           echo "result=${result}" >> $GITHUB_OUTPUT
     outputs:
       pnpmVersion: ${{ steps.get-pnpm-version.outputs.result }}
+  report:
+    name: "Report results"
+    if: github.event_name == "workflow_dispatch"
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    needs:
+      - nodeVersion
+      - pnpmVersion
+    env:
+      nodeVersion: ${{ needs.nodeVersion.outputs.nodeVersion }}
+      pnpmVersion: ${{ needs.pnpmVersion.outputs.pnpmVersion }}
+    steps:
+      - id: main
+        name: "Main"
+        run: |
+          echo "* Node Version: ${{ env.nodeVersion }}" >> $GITHUB_STEP_SUMMARY
+          echo "* PNPM Version: ${{ env.pnpmVersion }}" >> $GITHUB_STEP_SUMMARY
