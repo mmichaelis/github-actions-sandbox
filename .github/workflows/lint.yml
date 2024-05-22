@@ -1,0 +1,52 @@
+name: "Lint"
+
+on:
+  workflow_call:
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions: {}
+
+run-name: |
+  ${{ github.workflow }}
+
+env:
+  nodeVersion: 20
+  pnpmVersion: 9
+
+jobs:
+  main:
+    name: "Main"
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - id: checkout
+        name: Checkout
+        uses: actions/checkout@v4
+      - id: git-pull
+        name: "Pull Changes"
+        run: |
+          git pull
+      - id: installPnpm
+        name: "Install: Use PNPM ${{ env.pnpmVersion }}"
+        uses: pnpm/action-setup@v4
+        with:
+          version: ${{ env.pnpmVersion }}
+          run_install: false
+      - id: installNodeJs
+        name: "Install: Use Node.js ${{ env.nodeVersion }}"
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.nodeVersion }}
+          cache: "pnpm"
+      - id: install
+        name: Install
+        run: |
+          pnpm install --frozen-lockfile
+      - id: lint
+        name: "Lint"
+        run: |
+          pnpm lint
