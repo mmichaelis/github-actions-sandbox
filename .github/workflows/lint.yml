@@ -1,9 +1,18 @@
 name: "Lint"
 
 on:
-  workflow_call:
   workflow_dispatch:
-
+  workflow_call:
+    outputs:
+      artifact-name:
+        description: "Name of the uploaded artifact"
+        value: ${{ jobs.main.outputs.artifact-name }}
+      artifact-id:
+        description: "ID of the uploaded artifact"
+        value: ${{ jobs.main.outputs.artifact-id }}
+      artifact-url:
+        description: "URL of the uploaded artifact"
+        value: ${{ jobs.main.outputs.artifact-url }}
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
@@ -22,6 +31,10 @@ jobs:
     name: "Main"
     runs-on: ubuntu-latest
     timeout-minutes: 5
+    outputs:
+      artifact-name: ${{ steps.lint.outputs.outfile }}
+      artifact-id: ${{ steps.upload-result.outputs.artifact-id }}
+      artifact-url: ${{ steps.upload-result.outputs.artifact-url }}
     steps:
       - id: checkout
         name: Checkout
@@ -59,5 +72,5 @@ jobs:
         with:
           name: ${{ steps.lint.outputs.outfile }}
           path: ${{ steps.lint.outputs.outfile }}
-          retention-days: 30
-#          compression-level: 9
+          retention-days: 7
+          compression-level: 9
