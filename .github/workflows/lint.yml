@@ -23,11 +23,10 @@ permissions: {}
 run-name: |
   ${{ github.workflow }}
 
-env:
-  nodeVersion: 20
-  pnpmVersion: 9
-
 jobs:
+  about:
+    name: "About"
+    uses: "./.github/workflows/about.yml"
   main:
     name: "Main"
     runs-on: ubuntu-latest
@@ -36,6 +35,11 @@ jobs:
       artifact-name: ${{ steps.lint.outputs.outfile }}
       artifact-id: ${{ steps.upload-result.outputs.artifact-id }}
       artifact-url: ${{ steps.upload-result.outputs.artifact-url }}
+    needs:
+      - about
+    env:
+      nodeVersion: ${{ needs.about.outputs.nodeVersion }}
+      pnpmVersion: ${{ needs.about.outputs.pnpmVersion }}
     steps:
       - id: checkout
         name: Checkout
