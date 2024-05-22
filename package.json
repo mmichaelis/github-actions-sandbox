@@ -3,7 +3,13 @@
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
+  "engines": {
+    "node": "20",
+    "pnpm": "9"
+  },
+  "private": true,
   "scripts": {
+    "about": "node ./scripts/about.mjs",
     "lint": "eslint --max-warnings 0",
     "lint:init": "pnpm dlx @eslint/create-config@latest",
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -13,10 +19,12 @@
   "license": "ISC",
   "devDependencies": {
     "@eslint/js": "^9.3.0",
+    "@npmcli/package-json": "^5.1.0",
     "eslint": "^9.3.0",
     "eslint-config-prettier": "^9.1.0",
     "eslint-plugin-prettier": "^5.1.3",
     "globals": "^15.3.0",
+    "minimist": "^1.2.8",
     "prettier": "3.2.5"
   }
 }
