@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "lint": "eslint",
+    "lint": "eslint --max-warnings 0",
     "lint:init": "pnpm dlx @eslint/create-config@latest",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
