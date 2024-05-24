@@ -2,17 +2,7 @@ name: "Lint"
 
 on:
   workflow_dispatch: {}
-  workflow_call:
-    outputs:
-      artifact-name:
-        description: "Name of the uploaded artifact"
-        value: ${{ jobs.main.outputs.artifact-name }}
-      artifact-id:
-        description: "ID of the uploaded artifact"
-        value: ${{ jobs.main.outputs.artifact-id }}
-      artifact-url:
-        description: "URL of the uploaded artifact"
-        value: ${{ jobs.main.outputs.artifact-url }}
+  workflow_call: {}
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -31,10 +21,6 @@ jobs:
     name: "Main"
     runs-on: ubuntu-latest
     timeout-minutes: 5
-    outputs:
-      artifact-name: ${{ steps.lint.outputs.outfile }}
-      artifact-id: ${{ steps.upload-result.outputs.artifact-id }}
-      artifact-url: ${{ steps.upload-result.outputs.artifact-url }}
     needs:
       - about
     env:
@@ -67,15 +53,21 @@ jobs:
       - id: lint
         name: "Lint"
         run: |
-          outfile="eslint.json"
-          pnpm lint --output-file "${outfile}" --format "json"
+          outfile="eslint.md"
+          pnpm lint --output-file "${outfile}"
           echo "outfile=${outfile}" >> $GITHUB_OUTPUT
-      - id: upload-result
-        name: "Upload Linter Results (JSON)"
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: ${{ steps.lint.outputs.outfile }}
-          path: ${{ steps.lint.outputs.outfile }}
-          retention-days: 7
-          compression-level: 9
+      - id: lint-success
+        name: "Report Linter Success"
+        if: success()
+        run: |
+          echo "# ${{ github.workflow }}" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "No issues found. Great!" >> $GITHUB_STEP_SUMMARY
+      - id: lint-failure
+        name: "Report Linter Failure"
+        if: failure()
+        run: |
+          mdOutFile="${{ steps.lint.outputs.outfile }}"
+          echo "# ${{ github.workflow }}" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          cat "${mdOutFile}" >> $GITHUB_STEP_SUMMARY
