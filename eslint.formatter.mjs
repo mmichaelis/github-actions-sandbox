@@ -1,3 +1,30 @@
+const githubWorkflowCoords = () => {
+  const isCi = process.env.CI === "true";
+
+  if (!isCi) {
+    // Signal, that we are not running in CI.
+    return undefined;
+  }
+
+  const {
+    GITHUB_REF: ref,
+    GITHUB_REPOSITORY: repository,
+    GITHUB_SERVER_URL: serverUrl,
+    GITHUB_SHA: sha,
+    GITHUB_WORKSPACE: workspace,
+  } = process.env;
+
+  return {
+    ref,
+    repository,
+    serverUrl,
+    sha,
+    workspace,
+  };
+};
+
+console.log(`GitHub? ${JSON.stringify(githubWorkflowCoords())}`);
+
 /**
  * @typedef {import("eslint").Linter.LintMessage} LintMessage
  * @typedef {import("eslint").ESLint.LintResult} LintResult
@@ -57,17 +84,16 @@ const messageColumnFormatters = {
  */
 const escapeForMarkdown = (str) => {
   return str
-  .replaceAll("\\", "\\\\")
-  .replaceAll("<", "&lt;")
-  .replaceAll(">", "&gt;")
-  .replaceAll("&", "&amp;")
-  .replaceAll("`", "\\`")
-  .replaceAll("[", "\\[")
-  .replaceAll("]", "\\]")
-  .replaceAll("*", "\\*")
-  .replaceAll("_", "\\_")
-  .replaceAll("#", "\\#")
-  ;
+    .replaceAll("\\", "\\\\")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll("&", "&amp;")
+    .replaceAll("`", "\\`")
+    .replaceAll("[", "\\[")
+    .replaceAll("]", "\\]")
+    .replaceAll("*", "\\*")
+    .replaceAll("_", "\\_")
+    .replaceAll("#", "\\#");
 };
 
 /** @type {{[k in typeof messageColumns[number]]: "-"}} */
@@ -205,7 +231,6 @@ const formatMessage2Markdown = (
 };
 
 export default markdown;
-
 
 const problems = (n) => `${n} ${n === 1 ? "problem" : "problems"}`;
 const errors = (n) => `${n} ${n === 1 ? "error" : "errors"}`;
