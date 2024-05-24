@@ -54,8 +54,8 @@ jobs:
         name: "Lint"
         run: |
           outfile="eslint.md"
-          pnpm lint --output-file "${outfile}"
           echo "outfile=${outfile}" >> $GITHUB_OUTPUT
+          pnpm lint --output-file "${outfile}"
       - id: lint-success
         name: "Report Linter Success"
         if: success()
