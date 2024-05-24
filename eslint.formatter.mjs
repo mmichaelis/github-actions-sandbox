@@ -23,7 +23,34 @@ const githubWorkflowCoords = () => {
   };
 };
 
-console.log(`GitHub? ${JSON.stringify(githubWorkflowCoords())}`);
+/**
+ * Creates a URL to the given file. If message is given the URL will contain
+ * reference to the relevant lines and columns.
+ *
+ * @param {string} relativeFilePath
+ * @param {LintMessage | undefined} message
+ * @returns {string | undefined} URL to file (and lines) if identified to run in CI; `undefined` otherwise
+ */
+const githubRef = (relativeFilePath, message) => {
+  const coords = githubWorkflowCoords();
+  if (!coords) {
+    return undefined;
+  }
+  const fileUrl = `${coords.serverUrl}/${coords.repository}/blob/${coords.sha}/${relativeFilePath}`;
+  if (!message) {
+    return fileUrl;
+  }
+  const { column, line, endColumn, endLine } = message;
+  const startLineUrl = `${fileUrl}#L${line}C${column}`;
+  if (!endLine) {
+    return startLineUrl;
+  }
+  const endLineUrl = `${startLineUrl}-L${endLine}`;
+  if (endColumn) {
+    return `${endLineUrl}C${endColumn}`;
+  }
+  return endLineUrl;
+};
 
 /**
  * @typedef {import("eslint").Linter.LintMessage} LintMessage
@@ -134,6 +161,7 @@ const markdownSingle = (result, context) => {
   }
 
   const relativeFilePath = relativize(filePath, context);
+  const githubFileUrl = githubRef(relativeFilePath);
   const formattedMessages = messages.map(formatMessage);
   const lengths = columnLengths([messageHeadings, ...formattedMessages]);
   const lines = [];
@@ -141,15 +169,22 @@ const markdownSingle = (result, context) => {
   lines.push(`## ${relativeFilePath}`);
   lines.push(``);
 
-  if (relativeFilePath != filePath) {
-    lines.push(`(\`${filePath}\`)`);
+  if (githubFileUrl) {
+    lines.push(`\\[[${relativeFilePath}](${githubFileUrl})\\]`);
+  } else if (relativeFilePath != filePath) {
+    lines.push(`\\[\`${filePath}\`\\]`);
     lines.push(``);
   }
 
   lines.push(formatMessage2Markdown(messageHeadings, lengths));
   lines.push(formatMessage2Markdown(headerSeparator, lengths, "-"));
   formattedMessages.forEach((message) =>
-    lines.push(formatMessage2Markdown(message, lengths)),
+    lines.push(
+      formatMessage2Markdown(
+        { ...message, filePath: relativeFilePath },
+        lengths,
+      ),
+    ),
   );
   lines.push(``);
   lines.push(summarize(messages));
@@ -221,9 +256,23 @@ const formatMessage2Markdown = (
     `|${fillPrefix}` +
     messageColumns
       .map((column) => {
+        const filePath = message["filePath"];
         const columnLength = columnLengths[column] ?? 0;
         const value = String(message[column] ?? "");
-        return escapeForMarkdown(value.padEnd(columnLength, fillString));
+        const escapedForMarkdown = escapeForMarkdown(
+          value.padEnd(columnLength, fillString),
+        );
+        if (
+          filePath &&
+          ["line", "column", "endLine", "endColumn"].includes(column)
+        ) {
+          // No combined view, thus, just possibly add a URL to each entry.
+          const lineColumnUrl = githubRef(filePath, message);
+          if (lineColumnUrl) {
+            return `[${escapedForMarkdown}](${lineColumnUrl})`;
+          }
+        }
+        return escapedForMarkdown;
       })
       .join(`${fillPrefix}|${fillPostfix}`) +
     `${fillPostfix}|`
