@@ -10,7 +10,8 @@
   "private": true,
   "scripts": {
     "about": "node ./scripts/about.mjs",
-    "lint": "eslint --max-warnings 0",
+    "lint": "eslint --max-warnings 0 --format ./eslint.formatter.mjs",
+    "lint:default": "eslint --max-warnings 0",
     "lint:init": "pnpm dlx @eslint/create-config@latest",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
