@@ -45,7 +45,7 @@ const githubRef = (relativeFilePath, message) => {
   if (!endLine) {
     return startLineUrl;
   }
-  const endLineUrl = `${startLineUrl}-L${endLine}`;
+  const endLineUrl = `${startLineUrl}#L${endLine}`;
   if (endColumn) {
     return `${endLineUrl}C${endColumn}`;
   }
