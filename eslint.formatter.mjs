@@ -142,18 +142,8 @@ const markdown = (results, context) => {
  * @return {string}
  */
 const markdownSingle = (result, context) => {
-  const {
-    filePath,
-    messages,
-    suppressedMessages,
-    errorCount,
-    fatalErrorCount,
-    warningCount,
-    fixableErrorCount,
-    fixableWarningCount,
-    usedDeprecatedRules,
-  } = result;
-  const { cwd } = context;
+  const { filePath, messages, errorCount, fatalErrorCount, warningCount } =
+    result;
 
   const hasIssues = errorCount + fatalErrorCount + warningCount;
   if (hasIssues == 0) {
